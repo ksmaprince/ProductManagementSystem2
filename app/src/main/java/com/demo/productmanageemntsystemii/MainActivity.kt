@@ -6,13 +6,22 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import com.demo.productmanageemntsystemii.ui.screens.AddProductScreen
+import com.demo.productmanageemntsystemii.ui.screens.HomeScreen
+import com.demo.productmanageemntsystemii.ui.screens.UpdateProductScreen
 import com.demo.productmanageemntsystemii.ui.theme.ProductManageemntSystemIITheme
+import com.demo.productmanageemntsystemii.viewmodels.ProductViewModel
+import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+    @Inject
+    lateinit var viewModel: ProductViewModel
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -22,25 +31,25 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    Greeting("Android")
+                    val navController = rememberNavController()
+                    NavHost(navController = navController, startDestination = "home") {
+                        composable("home") {
+                            val onClickItem = { navController.navigate("add") }
+                            HomeScreen(viewmodel = viewModel, navController = navController)
+                        }
+                        composable("add") {
+                            AddProductScreen(viewModel = viewModel, navController = navController)
+                        }
+                        composable("edit") {
+                            UpdateProductScreen(
+                                viewModel = viewModel,
+                                navController = navController
+                            )
+
+                        }
+                    }
                 }
             }
         }
-    }
-}
-
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    ProductManageemntSystemIITheme {
-        Greeting("Android")
     }
 }
